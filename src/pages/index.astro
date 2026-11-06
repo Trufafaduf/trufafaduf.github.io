@@ -1,0 +1,62 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ProjectList from '../components/ProjectList.astro';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+
+// TODO: put your photo in public/images/ and set this to its path, e.g. '/images/portrait.jpg'.
+// Leave it as null to show the placeholder circle.
+const portrait: string | null = null;
+---
+<Base>
+  <section class="intro">
+    <div class="intro-grid" id="intro">
+      <div class="intro-text">
+        <h1>Alexander Tucker</h1>
+        <!-- TODO: replace with your overview -->
+        <p class="lede">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
+          labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+          laboris nisi ut aliquip ex ea commodo consequat.
+        </p>
+      </div>
+      {portrait ? (
+        <figure class="portrait"><img src={portrait} alt="Portrait of Alexander Tucker" width="400" height="400" /></figure>
+      ) : (
+        <figure class="portrait empty" aria-hidden="true">Photo</figure>
+      )}
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="projects-h">
+    <h2 id="projects-h" class="section-title">Projects</h2>
+    <ProjectList items={projects} />
+  </section>
+
+  <script is:inline>
+    // Size the photo circle to the text beside it: name top to overview bottom on wide screens,
+    // the name alone on phones. Repeats a few times because resizing the circle reflows the text.
+    (function () {
+      var grid = document.getElementById('intro');
+      var h1 = grid.querySelector('h1');
+      var lede = grid.querySelector('.lede');
+      var wide = window.matchMedia('(min-width: 40rem)');
+      function fit() {
+        // Never let the circle take more than about a third of the row, so the text keeps its room.
+        var cap = grid.clientWidth * (wide.matches ? 0.34 : 0.3);
+        for (var i = 0; i < 6; i++) {
+          var top = h1.getBoundingClientRect().top;
+          var bottom = (wide.matches ? lede : h1).getBoundingClientRect().bottom;
+          var size = Math.round(Math.min(bottom - top, cap));
+          var current = grid.querySelector('.portrait').getBoundingClientRect().height;
+          if (Math.abs(size - current) < 1) break;
+          grid.style.setProperty('--portrait', size + 'px');
+        }
+      }
+      fit();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+      new ResizeObserver(fit).observe(grid.parentElement);
+    })();
+  </script>
+</Base>

@@ -1,0 +1,228 @@
+/* ---------- Tokens ---------- */
+/* Light by default. Dark follows the visitor's system setting until they pick one with the toggle,
+   which sets <html data-theme="light|dark">. */
+:root {
+  color-scheme: light dark;
+
+  --bg: #f6f7f8;
+  --surface: #ffffff;
+  --text: #16181d;
+  --muted: #565c66;
+  --accent: #234e8c;
+  --rule: #dde0e5;
+  --focus: #234e8c;
+
+  --font: "Times New Roman", Times, "Liberation Serif", serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+
+  --measure: 40rem;
+  --wide: 60rem;
+  --gutter: 1rem;
+}
+:root[data-theme="light"] { color-scheme: light; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #111317; --surface: #181b20; --text: #eceef1; --muted: #a2a9b4;
+    --accent: #8db3ea; --rule: #2a2f37; --focus: #8db3ea;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #111317; --surface: #181b20; --text: #eceef1; --muted: #a2a9b4;
+  --accent: #8db3ea; --rule: #2a2f37; --focus: #8db3ea;
+}
+
+@media (prefers-contrast: more) {
+  :root { --muted: var(--text); --rule: var(--muted); }
+}
+
+@media (min-width: 40rem) {
+  :root { --gutter: 2rem; }
+}
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font-size: 100%; /* respects the browser's text-size setting */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 1.125rem; /* 18px: Times runs small, so one step above the 17px default */
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent); text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
+a:hover { text-decoration-thickness: 2px; }
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+img, svg { max-width: 100%; height: auto; }
+
+.skip {
+  position: absolute; left: -999px; top: 0.5rem;
+  background: var(--surface); padding: 0.5rem 0.75rem; z-index: 10;
+}
+.skip:focus { left: 0.5rem; }
+
+.wrap {
+  width: 100%;
+  max-width: calc(var(--wide) + 2 * var(--gutter));
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+/* ---------- Top bar with appearance toggle ---------- */
+.topbar .wrap { display: flex; justify-content: flex-end; padding-top: 0.75rem; }
+.theme-toggle {
+  font: inherit; font-size: 0.9375rem; color: var(--text);
+  background: var(--surface); border: 1px solid var(--rule); border-radius: 999px;
+  min-height: 44px; padding: 0 1rem; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.theme-toggle:hover { border-color: var(--muted); }
+.theme-toggle svg { width: 1rem; height: 1rem; }
+.theme-toggle[hidden] { display: none; }
+.theme-toggle .to-light { display: none; }
+:root[data-theme="dark"] .theme-toggle .to-light { display: inline-flex; }
+:root[data-theme="dark"] .theme-toggle .to-dark { display: none; }
+.theme-toggle span { display: inline-flex; align-items: center; gap: 0.5rem; }
+
+/* ---------- Footer ---------- */
+.site-footer {
+  border-top: 1px solid var(--rule);
+  margin-top: 5rem; padding: 1.5rem 0 2.5rem;
+  color: var(--muted); font-size: 0.9375rem;
+}
+.site-footer .wrap { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; justify-content: space-between; }
+.site-footer ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 1.25rem; flex-wrap: wrap; }
+
+/* ---------- Type ---------- */
+h1, h2, h3 { line-height: 1.15; letter-spacing: -0.005em; font-weight: 700; margin: 0; }
+h1 { font-size: clamp(2rem, 1.4rem + 2.6vw, 3rem); }
+h2 { font-size: 1.375rem; }
+h3 { font-size: 1.125rem; }
+
+.lede { font-size: 1.25rem; color: var(--muted); max-width: var(--measure); margin: 1rem 0 0; }
+
+/* ---------- Home ---------- */
+.intro { padding: 3.5rem 0 1rem; }
+
+/* Name, photo and overview. The photo's diameter (--portrait) is set by a small script to match
+   the text beside it: name + overview on wide screens, the name alone on phones. */
+.intro-grid {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 1.25rem; align-items: center;
+  --portrait: 5.5rem;
+}
+.intro-text { display: contents; }
+.intro-grid h1 { grid-column: 1; grid-row: 1; }
+.intro-grid .portrait { grid-column: 2; grid-row: 1; }
+.intro-grid .lede { grid-column: 1 / -1; grid-row: 2; }
+@media (min-width: 40rem) {
+  .intro-grid { column-gap: 2.5rem; align-items: start; --portrait: 14rem; }
+  .intro-text { display: block; grid-column: 1; grid-row: 1; }
+}
+.intro h1 { font-size: clamp(2.5rem, 1.6rem + 4vw, 4.25rem); font-weight: 400; letter-spacing: -0.01em; }
+.intro .lede { color: var(--text); margin-top: 1.5rem; margin-bottom: 0; }
+
+.portrait {
+  width: var(--portrait); height: var(--portrait); margin: 0;
+  border-radius: 50%; overflow: hidden; background: var(--surface);
+}
+.portrait img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.portrait.empty {
+  border: 1px dashed var(--muted);
+  display: grid; place-items: center;
+  color: var(--muted); font-size: 0.9375rem;
+}
+
+.section { padding-top: 3.5rem; }
+.section-title {
+  font-size: 1.125rem; font-weight: 400; font-variant: small-caps; text-transform: lowercase;
+  letter-spacing: 0.06em; color: var(--muted);
+  margin-bottom: 0.75rem;
+}
+
+/* ---------- Project index (the "ledger") ---------- */
+.ledger { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+.ledger li { border-bottom: 1px solid var(--rule); }
+.ledger a {
+  display: grid; gap: 0.35rem 2rem;
+  grid-template-columns: 1fr;
+  padding: 1.25rem 0; text-decoration: none; color: var(--text);
+}
+.ledger a:hover h3 { color: var(--accent); }
+.ledger p { margin: 0; color: var(--muted); max-width: var(--measure); }
+.ledger .meta { font-size: 0.9375rem; color: var(--muted); }
+
+@media (min-width: 48rem) {
+  .ledger a { grid-template-columns: 1fr 9rem; }
+  .ledger .meta { grid-column: 2; grid-row: 1 / span 2; text-align: right; padding-top: 0.2rem; }
+}
+
+.status::before {
+  content: ""; display: inline-block; width: 0.5em; height: 0.5em;
+  border-radius: 50%; margin-right: 0.45em; vertical-align: 0.08em;
+  background: currentColor; opacity: 0.55;
+}
+.status[data-status="Complete"]::before { opacity: 1; }
+.status[data-status="Draft"]::before { background: transparent; border: 1px solid currentColor; }
+
+/* ---------- Article (project and interest pages) ---------- */
+.article { padding-top: 3rem; }
+.article header { max-width: var(--measure); }
+.crumb { font-size: 0.9375rem; margin: 0 0 1.5rem; }
+.crumb a { text-decoration: none; display: inline-flex; min-height: 44px; align-items: center; }
+
+/* Signature: the working-paper header */
+.paper {
+  margin: 2rem 0 0; padding: 1rem 1.25rem;
+  border: 1px solid var(--rule); border-radius: 12px;
+  background: var(--surface);
+  display: grid; gap: 0.75rem 2rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: var(--measure);
+}
+.paper .span { grid-column: 1 / -1; }
+@media (min-width: 40rem) {
+  .paper { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.paper div { min-width: 0; }
+.paper dt { font-size: 1rem; color: var(--muted); letter-spacing: 0.06em; font-variant: small-caps; text-transform: lowercase; }
+.paper dd { margin: 0.1rem 0 0; font-size: 1.0625rem; }
+
+.prose {
+  font-size: 1.25rem; /* 20px */
+  line-height: 1.65;
+  max-width: var(--measure);
+  margin-top: 2.5rem;
+}
+.prose h2 { margin: 2.5rem 0 0.75rem; }
+.prose h3 { margin: 2rem 0 0.5rem; }
+.prose p, .prose ul, .prose ol { margin: 0 0 1.1rem; }
+.prose li { margin-bottom: 0.35rem; }
+.prose blockquote {
+  margin: 1.5rem 0; padding-left: 1rem;
+  border-left: 3px solid var(--rule); color: var(--muted);
+}
+.prose code { font-family: var(--mono); font-size: 0.85em; background: var(--surface); padding: 0.1em 0.3em; border-radius: 4px; }
+.prose .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.5rem 0; }
+.prose table { border-collapse: collapse; font-size: 0.9375rem; width: 100%; margin: 1.5rem 0; }
+.prose th, .prose td { border-bottom: 1px solid var(--rule); padding: 0.5rem 0.5rem 0.5rem 0; text-align: left; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .ledger h3 { transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease; }
+}

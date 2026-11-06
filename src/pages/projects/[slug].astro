@@ -1,0 +1,29 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((p) => ({ params: { slug: p.id }, props: { p } }));
+}
+
+const { p } = Astro.props;
+const { Content } = await render(p);
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+---
+<Base title={p.data.title} description={p.data.summary}>
+  <article class="article">
+    <header>
+      <p class="crumb"><a href="/">← Alexander Tucker</a></p>
+      <h1>{p.data.title}</h1>
+      <p class="lede">{p.data.summary}</p>
+      <dl class="paper">
+        <div><dt>Status</dt><dd><span class="status" data-status={p.data.status}>{p.data.status}</span></dd></div>
+        <div><dt>Role</dt><dd>{p.data.role}</dd></div>
+        <div><dt>Updated</dt><dd><time datetime={p.data.updated.toISOString()}>{fmt(p.data.updated)}</time></dd></div>
+        <div class="span"><dt>Methods</dt><dd>{p.data.methods.join(' · ')}</dd></div>
+      </dl>
+    </header>
+    <div class="prose"><Content /></div>
+  </article>
+</Base>

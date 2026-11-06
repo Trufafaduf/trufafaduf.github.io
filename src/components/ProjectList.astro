@@ -1,0 +1,23 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  items: CollectionEntry<'projects'>[];
+}
+const { items } = Astro.props;
+const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+---
+<ul class="ledger">
+  {items.map((p) => (
+    <li>
+      <a href={`/projects/${p.id}/`}>
+        <h3>{p.data.title}</h3>
+        <p>{p.data.summary}</p>
+        <span class="meta">
+          <span class="status" data-status={p.data.status}>{p.data.status}</span><br />
+          <time datetime={p.data.updated.toISOString()}>{fmt(p.data.updated)}</time>
+        </span>
+      </a>
+    </li>
+  ))}
+</ul>
